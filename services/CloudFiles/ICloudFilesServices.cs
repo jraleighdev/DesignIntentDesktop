@@ -9,6 +9,6 @@ namespace DesignIntentDesktop.HttpHelpers.CloudFiles
     {
         Task<IEnumerable<CloudFile>> GetFiles();
 
-        Task<IEnumerable<CloudFile>> AddFile(CloudFile file); 
+        Task<CloudFile> AddFile(CloudFile file); 
     }
 }

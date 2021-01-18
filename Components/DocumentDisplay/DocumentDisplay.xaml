@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              xmlns:local="clr-namespace:DesignIntentDesktop.Components.DocumentDisplay"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:valueConverters="clr-namespace:DesignIntentDesktop.ValueConverters"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
@@ -17,7 +19,9 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Margin="5" Orientation="Horizontal">
             <Button Command="{Binding GetDataCommand}">Get Data</Button>
+            <Button Command="{Binding UploadBillCommand}">Upload</Button>
+            <fa:FontAwesome Foreground="Blue" Margin="5 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Loading, Converter={valueConverters:BooleanToVisibilityConverter}, ConverterParameter=True}" Icon="Spinner" Spin="True"></fa:FontAwesome>
         </StackPanel>
-        <syncfusion:SfDataGrid Grid.Row="1" x:Name="DataGrid1" ShowGroupDropArea="True" AllowFiltering="True" AllowEditing="True" ItemsSource="{Binding Documents}"></syncfusion:SfDataGrid>
+        <syncfusion:SfDataGrid AllowResizingColumns="True" Grid.Row="1" x:Name="DataGrid1" ShowGroupDropArea="True" AllowFiltering="True" AllowEditing="True" ItemsSource="{Binding Documents}"></syncfusion:SfDataGrid>
     </Grid>
 </UserControl>

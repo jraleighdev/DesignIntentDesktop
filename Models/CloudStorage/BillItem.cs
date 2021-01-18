@@ -17,5 +17,10 @@ namespace DesignIntentDesktop.Models.CloudStorage
         public int Qty { get; set; }
 
         public double Length { get; set; }
+
+        public BillItem()
+        {
+            
+        }
     }
 }

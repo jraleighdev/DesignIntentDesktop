@@ -1,6 +1,6 @@
 ﻿namespace DesignIntentDesktop.services.General
 {
-    public class AppSetttings
+    public class AppSettings
     {
         public string UserName { get; set; }
         

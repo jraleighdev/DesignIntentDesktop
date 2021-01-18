@@ -1,41 +1,111 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
+using DesignIntentDesktop.Helpers;
+using DesignIntentDesktop.HttpHelpers.CloudFiles;
+using DesignIntentDesktop.Models.CloudStorage;
+using DesignIntentDesktop.services.Authentication;
 using DesignIntentDesktop.ViewModels.Base;
 using InventorWrapper;
+using InventorWrapper.IProps;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DesignIntentDesktop.Components.DocumentDisplay
 {
     public class DocumentDisplayViewModel : BaseViewModel
     {
+
+        private ICloudFilesServices _cloudFilesServices;
+
+        private IAuthService _authService;
+        
         public ObservableCollection<DocumentDisplayViewModelItem> Documents { get; set; }
         
         public ICommand GetDataCommand { get; set; }
+        
+        public ICommand UploadBillCommand { get; set; }
+        
+        public bool Loading { get; set; }
 
         public DocumentDisplayViewModel()
         {
             Documents = new ObservableCollection<DocumentDisplayViewModelItem>();
 
-            GetDataCommand = new RelayCommand(GetData);
+            GetDataCommand = new RelayCommand(async () => await GetData());
+            UploadBillCommand = new RelayCommand(async () => await UploadBill());
+
+            _cloudFilesServices = App.ServiceProvider.GetRequiredService<ICloudFilesServices>();
         }
 
-        private void GetData()
+        private async Task UploadBill()
         {
-            if (!InventorApplication.Attached)
+            await RunCommand(() => Loading, async () =>
             {
-                InventorApplication.Attach();
-
-                if (InventorApplication.ActiveDocument.IsAssemblyDoc)
+                if (Documents != null && Documents.Count > 0)
                 {
-                    var doc = InventorApplication.ActiveDocument.GetAssemblyDocument();
+                    var service = _cloudFilesServices;
 
-                    var docs = doc.ReferencedDocuments;
+                    var doc = InventorApplication.ActiveDocument;
 
-                    foreach (var document in docs)
+                    var file = new CloudFile
                     {
-                        Documents.Add(new DocumentDisplayViewModelItem{Name = document.Name, Path = document.FileName});
-                    }
+                        Id = Guid.NewGuid(),
+                        FilePath = doc.FileName,
+                        FileName = System.IO.Path.GetFileName(doc.FileName),
+                        ThreeDfile = true,
+                        DrawingFile = false,
+                        ForgeUrn = "",
+                        ForgeBucket = "",
+                        Bill = Documents.Select(document => Mapping.Map<BillItem>(document)).ToList()
+                    };
+
+                    await _cloudFilesServices.AddFile(file);
                 }
-            }
+            });
+        }
+
+        private async Task GetData()
+        {
+            await RunCommand(() => Loading, async () =>
+            {
+                await Task.Run(() =>
+                {
+                    if (!InventorApplication.Attached)
+                    {
+                        InventorApplication.Attach();
+
+                        if (InventorApplication.ActiveDocument.IsAssemblyDoc)
+                        {
+                            var doc = InventorApplication.ActiveDocument.GetAssemblyDocument();
+                    
+                            doc.RepresentationManager.ActivateLevelOfDetail("Master");
+
+                            doc.Bom.PartsOnlyViewEnabled = true;
+
+                            doc.Bom.View = "Parts Only";
+
+                            var bill = doc.Bom.GetGill();
+
+                            foreach (var b in bill)
+                            {
+                                Documents.Add(new DocumentDisplayViewModelItem
+                                (
+                                    b.Document.Name,
+                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.PartNumber),
+                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.Description),
+                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.StockNumber),
+                                    b.Qty,
+                                    ConvererHelpers.ConvertDouble((b.Document.Properties.GetPropertyValue(IpropertyEnum.Custom, "Length")))
+                                ));
+                            }
+                        }
+                    }
+                });
+            });
         }
     }
 }

@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Windows;
+using DesignIntentDesktop.Components.DocumentDisplay;
+using DesignIntentDesktop.HttpHelpers.CloudFiles;
+using DesignIntentDesktop.services.Authentication;
+using DesignIntentDesktop.services.General;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DesignIntentDesktop
 {
@@ -12,7 +20,56 @@ namespace DesignIntentDesktop
 	/// </summary>
 	public partial class App : Application
 	{
-        public App()
+		public static IServiceProvider ServiceProvider { get; private set; }
+		
+		public IConfiguration Configuration { get; private set; }
+
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+			Configuration = builder.Build();
+			
+			var serviceCollection = new ServiceCollection();
+			
+			ConfigureServices(serviceCollection);
+			ConfigureHttp(serviceCollection);
+
+			ServiceProvider = serviceCollection.BuildServiceProvider();
+
+			var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+			mainWindow.Show();
+		}
+
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
+
+			services.AddScoped(typeof(DocumentDisplayViewModel));
+			services.AddTransient(typeof(MainWindow));
+			services.AddTransient<AuthenticationDelegationHandler>();
+		}
+
+		public void ConfigureHttp(IServiceCollection services)
+		{
+			services.AddHttpClient<ICloudFilesServices, CloudFilesService>(x =>
+			{
+				x.BaseAddress = new Uri("https://localhost:44352/api/");
+				x.DefaultRequestHeaders.Accept.Clear();
+				x.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			}).AddHttpMessageHandler<AuthenticationDelegationHandler>();
+
+			services.AddHttpClient<IAuthService, AuthService>(x =>
+			{
+				x.BaseAddress = new Uri("https://localhost:44352/api/");
+				x.DefaultRequestHeaders.Accept.Clear();
+				x.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			});
+		}
+
+		public App()
         {
 			Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzY5MjI2QDMxMzgyZTM0MmUzMFNDSzF3MXpvR3o3Nmloc2lUYVFqVEFaekVoL0h0dmg2bDVlcDZvcGorRTA9");
 		}

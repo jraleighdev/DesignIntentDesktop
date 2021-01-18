@@ -30,13 +30,13 @@ namespace DesignIntentDesktop.HttpHelpers.CloudFiles
             return null;
         }
 
-        public async Task<IEnumerable<CloudFile>> AddFile(CloudFile file)
+        public async Task<CloudFile> AddFile(CloudFile file)
         {
             using (var request = await _client.PostAsJsonAsync($"{controller}", file))
             {
                 if (request.IsSuccessStatusCode)
                 {
-                    return await request.Content.ReadAsAsync<IEnumerable<CloudFile>>();
+                    return await request.Content.ReadAsAsync<CloudFile>();
                 }
             }
 
