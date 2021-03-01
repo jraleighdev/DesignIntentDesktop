@@ -28,6 +28,10 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
         public ICommand GetDataCommand { get; set; }
         
         public ICommand UploadBillCommand { get; set; }
+
+        public ICommand TestCommand { get; set; }
+
+        public bool ButtonsEnabled => !Loading;
         
         public bool Loading { get; set; }
 
@@ -37,6 +41,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
 
             GetDataCommand = new RelayCommand(async () => await GetData());
             UploadBillCommand = new RelayCommand(async () => await UploadBill());
+            TestCommand = new RelayCommand(Test);
 
             _cloudFilesServices = App.ServiceProvider.GetRequiredService<ICloudFilesServices>();
         }
@@ -106,6 +111,11 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
                     }
                 });
             });
+        }
+
+        public void Test()
+        {
+            ;
         }
     }
 }

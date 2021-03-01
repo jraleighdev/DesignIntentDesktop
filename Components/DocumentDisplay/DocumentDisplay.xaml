@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:DesignIntentDesktop.Components.DocumentDisplay"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:valueConverters="clr-namespace:DesignIntentDesktop.ValueConverters"
+             xmlns:customButtons="clr-namespace:DesignIntentDesktop.Components.Shared.Buttons"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
@@ -17,10 +18,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Margin="5" Orientation="Horizontal">
-            <Button Command="{Binding GetDataCommand}">Get Data</Button>
-            <Button Command="{Binding UploadBillCommand}">Upload</Button>
-            <fa:FontAwesome Foreground="Blue" Margin="5 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Loading, Converter={valueConverters:BooleanToVisibilityConverter}, ConverterParameter=True}" Icon="Spinner" Spin="True"></fa:FontAwesome>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <customButtons:IconButton IsEnabled="{Binding ButtonsEnabled}" Icon="Download" Label="Get Data" Command="{Binding GetDataCommand}"/>
+            <customButtons:IconButton IsEnabled="{Binding ButtonsEnabled}" Icon="Upload" Label="Upload" Command="{Binding UploadBillCommand}"/>
+            <fa:FontAwesome Foreground="Blue" FontSize="30" FontWeight="Bold" Margin="5 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Loading, Converter={valueConverters:BooleanToVisibilityConverter}, ConverterParameter=True}" Icon="Spinner" Spin="True"></fa:FontAwesome>
         </StackPanel>
         <syncfusion:SfDataGrid AllowResizingColumns="True" Grid.Row="1" x:Name="DataGrid1" ShowGroupDropArea="True" AllowFiltering="True" AllowEditing="True" ItemsSource="{Binding Documents}"></syncfusion:SfDataGrid>
     </Grid>

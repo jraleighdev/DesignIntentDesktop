@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="WPFControls.xaml" />
+                <ResourceDictionary Source="Styles/Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <self:BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <!--Style for window-->
