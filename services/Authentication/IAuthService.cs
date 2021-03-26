@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using DesignIntentDesktop.Models;
+using DesignIntentDesktop.Models.Authentication;
 
 namespace DesignIntentDesktop.services.Authentication
 {
     public interface IAuthService
     {
-        Task<Auth> Login();
+        Task<AuthResponse> Login();
     }
 }

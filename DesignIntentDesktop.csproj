@@ -230,6 +230,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutomationProcessing\Enums\Commands.cs" />
+    <Compile Include="Components\Commands\CommandView.xaml.cs">
+      <DependentUpon>CommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Commands\CommandsViewModel.cs" />
+    <Compile Include="Components\Commands\CommandViewModel.cs" />
     <Compile Include="Components\DocumentDisplay\DocumentDisplay.xaml.cs">
       <DependentUpon>DocumentDisplay.xaml</DependentUpon>
     </Compile>
@@ -239,17 +245,22 @@
       <DependentUpon>IconButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Expressions\ExpressionHelper.cs" />
+    <Compile Include="Helpers\ConfigurationHelpers.cs" />
     <Compile Include="Helpers\ConverterHelpers.cs" />
     <Compile Include="Helpers\Mapping.cs" />
     <Compile Include="Models\Authentication\Auth.cs" />
+    <Compile Include="Models\Authentication\AuthResponse.cs" />
     <Compile Include="Models\Authentication\LoginDto.cs" />
     <Compile Include="Models\CloudStorage\BillItem.cs" />
     <Compile Include="Models\CloudStorage\CloudFile.cs" />
+    <Compile Include="Models\Response\AbpResponse.cs" />
     <Compile Include="services\Authentication\AuthenticationDelegationHandler.cs" />
     <Compile Include="services\Authentication\AuthService.cs" />
     <Compile Include="services\Authentication\IAuthService.cs" />
     <Compile Include="services\CloudFiles\CloudFilesService.cs" />
+    <Compile Include="services\CloudFiles\CloudStorageService.cs" />
     <Compile Include="services\CloudFiles\ICloudFilesServices.cs" />
+    <Compile Include="services\CloudFiles\ICloudStorageService.cs" />
     <Compile Include="services\General\AppSettings.cs" />
     <Compile Include="SkinCombo.xaml.cs">
       <DependentUpon>SkinCombo.xaml</DependentUpon>
@@ -258,6 +269,10 @@
     <Compile Include="ValueConverters\BooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Base\BaseViewModel.cs" />
     <Compile Include="ViewModels\Base\RelayCommand.cs" />
+    <Page Include="Components\Commands\CommandView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\DocumentDisplay\DocumentDisplay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -18,13 +18,13 @@ namespace DesignIntentDesktop.services.Authentication
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var token = await _authService.Login();
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
             var response = await base.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
             {
                 token = await _authService.Login();
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
                 response = await base.SendAsync(request, cancellationToken);
             }
 

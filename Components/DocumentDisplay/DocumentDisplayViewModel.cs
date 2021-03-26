@@ -9,6 +9,7 @@ using DesignIntentDesktop.Helpers;
 using DesignIntentDesktop.HttpHelpers.CloudFiles;
 using DesignIntentDesktop.Models.CloudStorage;
 using DesignIntentDesktop.services.Authentication;
+using DesignIntentDesktop.services.CloudFiles;
 using DesignIntentDesktop.ViewModels.Base;
 using InventorWrapper;
 using InventorWrapper.IProps;
@@ -20,6 +21,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
     {
 
         private ICloudFilesServices _cloudFilesServices;
+        private ICloudStorageService _cloudStorageService;
 
         private IAuthService _authService;
         
@@ -44,6 +46,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
             TestCommand = new RelayCommand(Test);
 
             _cloudFilesServices = App.ServiceProvider.GetRequiredService<ICloudFilesServices>();
+            _cloudStorageService = App.ServiceProvider.GetRequiredService<ICloudStorageService>();
         }
 
         private async Task UploadBill()
@@ -69,6 +72,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
                     };
 
                     await _cloudFilesServices.AddFile(file);
+                    await _cloudStorageService.UploadFile(file.FilePath, file.Id);
                 }
             });
         }

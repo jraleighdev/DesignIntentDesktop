@@ -10,7 +10,7 @@ namespace DesignIntentDesktop.HttpHelpers.CloudFiles
     {
         private HttpClient _client;
 
-        private const string controller = "CloudFiles";
+        private const string controller = "CloudFile";
         
         public CloudFilesService(HttpClient client)
         {
@@ -19,7 +19,7 @@ namespace DesignIntentDesktop.HttpHelpers.CloudFiles
         
         public async Task<IEnumerable<CloudFile>> GetFiles()
         {
-            using (var request = await _client.GetAsync($"{controller}"))
+            using (var request = await _client.GetAsync($"{controller}/GetFiles"))
             {
                 if (request.IsSuccessStatusCode)
                 {
@@ -32,7 +32,7 @@ namespace DesignIntentDesktop.HttpHelpers.CloudFiles
 
         public async Task<CloudFile> AddFile(CloudFile file)
         {
-            using (var request = await _client.PostAsJsonAsync($"{controller}", file))
+            using (var request = await _client.PostAsJsonAsync($"{controller}/AddFile", file))
             {
                 if (request.IsSuccessStatusCode)
                 {

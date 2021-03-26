@@ -1,6 +1,8 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using DesignIntentDesktop.Models;
+using DesignIntentDesktop.Models.Authentication;
+using DesignIntentDesktop.Models.Response;
 using DesignIntentDesktop.services.General;
 using Microsoft.Extensions.Options;
 
@@ -10,31 +12,29 @@ namespace DesignIntentDesktop.services.Authentication
     {
         private readonly HttpClient _client;
 
-        private readonly string _controller;
-
         private readonly AppSettings _settings;
 
         public AuthService(HttpClient client, IOptions<AppSettings> settings)
         {
             _client = client;
             _settings = settings.Value;
-            _controller = "Account";
         }
         
-        public async Task<Auth> Login()
+        public async Task<AuthResponse> Login()
         {
             var auth = await GetToken();
 
             return auth;
         }
 
-        private async Task<Auth> GetToken()
+        private async Task<AuthResponse> GetToken()
         {
-            using (var request = await _client.PostAsJsonAsync($"{_controller}/Login", new LoginDto{Email = _settings.UserName, Password = _settings.Password}))
+            using (var request = await _client.PostAsJsonAsync("TokenAuth/Authenticate", new LoginDto{UserNameOrEmailAddress = _settings.UserName, Password = _settings.Password}))
             {
                 if (request.IsSuccessStatusCode)
                 {
-                    return await request.Content.ReadAsAsync<Auth>();
+                    var result = await request.Content.ReadAsAsync<AbpResponse<AuthResponse>>();
+                    return result.Result;
                 }
             }
 
