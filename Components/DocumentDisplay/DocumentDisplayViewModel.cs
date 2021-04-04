@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using DesignIntentDesktop.Helpers;
-using DesignIntentDesktop.HttpHelpers.CloudFiles;
-using DesignIntentDesktop.Models.CloudStorage;
+using DesignIntentDesktop.ServiceProxies;
 using DesignIntentDesktop.services.Authentication;
-using DesignIntentDesktop.services.CloudFiles;
 using DesignIntentDesktop.ViewModels.Base;
 using InventorWrapper;
 using InventorWrapper.IProps;
@@ -20,7 +19,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
     public class DocumentDisplayViewModel : BaseViewModel
     {
 
-        private ICloudFilesServices _cloudFilesServices;
+        private ICloudFileService _cloudFilesServices;
         private ICloudStorageService _cloudStorageService;
 
         private IAuthService _authService;
@@ -45,7 +44,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
             UploadBillCommand = new RelayCommand(async () => await UploadBill());
             TestCommand = new RelayCommand(Test);
 
-            _cloudFilesServices = App.ServiceProvider.GetRequiredService<ICloudFilesServices>();
+            _cloudFilesServices = App.ServiceProvider.GetRequiredService<ICloudFileService>();
             _cloudStorageService = App.ServiceProvider.GetRequiredService<ICloudStorageService>();
         }
 
@@ -71,8 +70,12 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
                         Bill = Documents.Select(document => Mapping.Map<BillItem>(document)).ToList()
                     };
 
-                    await _cloudFilesServices.AddFile(file);
-                    await _cloudStorageService.UploadFile(file.FilePath, file.Id);
+                    await _cloudFilesServices.AddFileAsync(file);
+
+                    using (Stream stream = File.Open(file.FilePath, FileMode.Open))
+                    {
+                        await _cloudStorageService.UploadAsync(file.Id, new FileParameter(stream, file.FilePath));
+                    }
                 }
             });
         }
@@ -86,33 +89,36 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
                     if (!InventorApplication.Attached)
                     {
                         InventorApplication.Attach();
+                    }
 
-                        if (InventorApplication.ActiveDocument.IsAssemblyDoc)
+                    if (InventorApplication.ActiveDocument.IsAssemblyDoc)
+                    {
+                        var doc = InventorApplication.ActiveDocument.GetAssemblyDocument();
+
+                        doc.RepresentationManager.ActivateLevelOfDetail("Master");
+
+                        doc.Bom.PartsOnlyViewEnabled = true;
+
+                        doc.Bom.View = "Parts Only";
+
+                        var bill = doc.Bom.GetGill();
+
+                        Documents.Clear();
+
+                        foreach (var b in bill)
                         {
-                            var doc = InventorApplication.ActiveDocument.GetAssemblyDocument();
-                    
-                            doc.RepresentationManager.ActivateLevelOfDetail("Master");
-
-                            doc.Bom.PartsOnlyViewEnabled = true;
-
-                            doc.Bom.View = "Parts Only";
-
-                            var bill = doc.Bom.GetGill();
-
-                            foreach (var b in bill)
-                            {
-                                Documents.Add(new DocumentDisplayViewModelItem
-                                (
-                                    b.Document.Name,
-                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.PartNumber),
-                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.Description),
-                                    b.Document.Properties.GetPropertyValue(IpropertyEnum.StockNumber),
-                                    b.Qty,
-                                    ConvererHelpers.ConvertDouble((b.Document.Properties.GetPropertyValue(IpropertyEnum.Custom, "Length")))
-                                ));
-                            }
+                            Documents.Add(new DocumentDisplayViewModelItem
+                            (
+                                b.Document.Name,
+                                b.Document.Properties.GetPropertyValue(IpropertyEnum.PartNumber),
+                                b.Document.Properties.GetPropertyValue(IpropertyEnum.Description),
+                                b.Document.Properties.GetPropertyValue(IpropertyEnum.StockNumber),
+                                b.Qty,
+                                ConvererHelpers.ConvertDouble((b.Document.Properties.GetPropertyValue(IpropertyEnum.Custom, "Length")))
+                            ));
                         }
                     }
+
                 });
             });
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using DesignIntentDesktop.Helpers;
-using DesignIntentDesktop.Models.CloudStorage;
+using DesignIntentDesktop.ServiceProxies;
 using DesignIntentDesktop.ViewModels.Base;
 
 namespace DesignIntentDesktop.Components.DocumentDisplay

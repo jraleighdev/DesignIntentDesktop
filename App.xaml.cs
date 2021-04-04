@@ -8,9 +8,8 @@ using System.Net.Http.Headers;
 using System.Windows;
 using DesignIntentDesktop.Components.DocumentDisplay;
 using DesignIntentDesktop.Helpers;
-using DesignIntentDesktop.HttpHelpers.CloudFiles;
+using DesignIntentDesktop.ServiceProxies;
 using DesignIntentDesktop.services.Authentication;
-using DesignIntentDesktop.services.CloudFiles;
 using DesignIntentDesktop.services.General;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,25 +55,21 @@ namespace DesignIntentDesktop
 
 		public void ConfigureHttp(IServiceCollection services)
 		{
-			services.AddHttpClient<ICloudFilesServices, CloudFilesService>(x =>
-			{
-				x.BaseAddress = new Uri(Configuration.GetSetting<string>(nameof(AppSettings.DesignIntentUrl)) + "services/app/");
-				x.DefaultRequestHeaders.Accept.Clear();
-				x.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-			}).AddHttpMessageHandler<AuthenticationDelegationHandler>();
-
-			services.AddHttpClient<IAuthService, AuthService>(x =>
+			services.AddHttpClient<ICloudFileService, CloudFileService>(x => 
 			{
 				x.BaseAddress = new Uri(Configuration.GetSetting<string>(nameof(AppSettings.DesignIntentUrl)));
+			}).AddHttpMessageHandler<AuthenticationDelegationHandler>();
+
+            services.AddHttpClient<IAuthService, AuthService>(x =>
+			{
+				x.BaseAddress = new Uri(Configuration.GetSetting<string>(nameof(AppSettings.DesignIntentUrl)) + "api/");
 				x.DefaultRequestHeaders.Accept.Clear();
 				x.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			});
 
 			services.AddHttpClient<ICloudStorageService, CloudStorageService>(x =>
 			{
-				x.BaseAddress = new Uri(Configuration.GetSetting<string>(nameof(AppSettings.DesignIntentUrl)) + "services/app/");
-				x.DefaultRequestHeaders.Clear();
-				x.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/formdata"));
+				x.BaseAddress = new Uri(Configuration.GetSetting<string>(nameof(AppSettings.DesignIntentUrl)));
 			});
 		}
 

@@ -1,0 +1,22 @@
+{
+  "name": "designintentdesktop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jraleighdev/DesignIntentDesktop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jraleighdev/DesignIntentDesktop/issues"
+  },
+  "homepage": "https://github.com/jraleighdev/DesignIntentDesktop#readme",
+  "devDependencies": {
+    "nswag": "^13.4.2"
+  }
+}
