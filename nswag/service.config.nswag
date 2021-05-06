@@ -53,7 +53,7 @@
       "namespace": "DesignIntentDesktop.ServiceProxies",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTime",
-      "jsonConverters": null,
+      "jsonConverters": ["AjaxWrapperConverter"],
       "anyType": "object",
       "dateTimeType": "System.DateTime",
       "timeType": "System.TimeSpan",

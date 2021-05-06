@@ -48,7 +48,7 @@ namespace DesignIntentDesktop
 		{
 			services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
 
-			services.AddScoped(typeof(DocumentDisplayViewModel));
+			services.AddScoped(typeof(CloudFileViewModel));
 			services.AddTransient(typeof(MainWindow));
 			services.AddTransient<AuthenticationDelegationHandler>();
 		}

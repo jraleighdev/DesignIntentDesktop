@@ -11,7 +11,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
-        <local:DocumentDisplayViewModel></local:DocumentDisplayViewModel>
+        <local:CloudFileViewModel></local:CloudFileViewModel>
     </UserControl.DataContext>
     <Grid>
         <Grid.RowDefinitions>
@@ -23,6 +23,6 @@
             <customButtons:IconButton IsEnabled="{Binding ButtonsEnabled}" Icon="Upload" Label="Upload" Command="{Binding UploadBillCommand}"/>
             <fa:FontAwesome Foreground="Blue" FontSize="30" FontWeight="Bold" Margin="5 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Loading, Converter={valueConverters:BooleanToVisibilityConverter}, ConverterParameter=True}" Icon="Spinner" Spin="True"></fa:FontAwesome>
         </StackPanel>
-        <syncfusion:SfDataGrid AllowResizingColumns="True" Grid.Row="1" x:Name="DataGrid1" ShowGroupDropArea="True" AllowFiltering="True" AllowEditing="True" ItemsSource="{Binding Documents}"></syncfusion:SfDataGrid>
+        <syncfusion:SfDataGrid AllowResizingColumns="True" Grid.Row="1" x:Name="DataGrid1" ShowGroupDropArea="True" AllowFiltering="True" AllowEditing="True" ItemsSource="{Binding CloudFiles}"></syncfusion:SfDataGrid>
     </Grid>
 </UserControl>

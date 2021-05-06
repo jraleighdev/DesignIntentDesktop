@@ -8,7 +8,7 @@ namespace DesignIntentDesktop.Components.DocumentDisplay
         {
             InitializeComponent();
             
-            var viewModel = new DocumentDisplayViewModel();
+            var viewModel = new CloudFileViewModel();
 
             this.DataContext = viewModel;
         }
